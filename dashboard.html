@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | QuestionClicks2Mpesa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --danger: #ff7675;
+            --warning: #fdcb6e;
+            --info: #0984e3;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .account-alert {
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--danger), #e84393);
+            color: white;
+            border: none;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .account-alert:hover {
+            background: linear-gradient(135deg, #e84393, var(--danger));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        
+        .payment-instructions {
+            display: none;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            padding: 30px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .activation-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            background: white;
+        }
+        
+        .activation-header {
+            background: linear-gradient(135deg, var(--warning), #ffeaa7);
+            color: var(--dark);
+            padding: 20px;
+            font-weight: 600;
+        }
+        
+        .instruction-step {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background-color: rgba(0,0,0,0.03);
+            transition: all 0.3s;
+        }
+        
+        .instruction-step:hover {
+            background-color: rgba(0,0,0,0.05);
+            transform: translateX(5px);
+        }
+        
+        .instruction-step strong {
+            color: var(--primary);
+        }
+        
+        .copy-btn {
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            border: 1px solid #dee2e6;
+        }
+        
+        .copy-btn:hover {
+            background-color: var(--light);
+            transform: translateY(-2px);
+        }
+        
+        .btn-activate {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-activate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--dark), #636e72);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--info), #74b9ff);
+            color: white;
+            font-weight: 600;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        
+        .survey-card .card-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .disabled-feature {
+            opacity: 0.6;
+            position: relative;
+        }
+        
+        .disabled-feature::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.5);
+            z-index: 1;
+        }
+        
+        .activate-bottom-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(108, 92, 231, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(108, 92, 231, 0); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Account Inactive Alert -->
+    <div class="alert account-alert mb-0 text-center animate__animated animate__fadeIn" id="inactiveAlert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <strong>ACCOUNT INACTIVE</strong> - CLICK TO ACTIVATE
+    </div>
+
+    <!-- Payment Instructions (Hidden Initially) -->
+    <div class="payment-instructions" id="paymentInstructions">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="activation-card animate-in">
+                        <div class="activation-header text-center">
+                            <i class="fas fa-lock-open me-2"></i> ACTIVATE YOUR ACCOUNT
+                        </div>
+                        <div class="card-body p-4">
+                            <h5 class="mb-4 text-center"><i class="fas fa-mobile-alt me-2"></i> Payment Instructions</h5>
+                            
+                            <div class="instruction-step animate__animated animate__fadeIn animate__delay-1s">
+                                <i class="fas fa-arrow-right text-primary me-2"></i>
+                                Go to <strong>M-Pesa</strong> on your phone
+                            </div>
+                            
+                            <div class="instruction-step animate__animated animate__fadeIn animate__delay-2s">
+                                <i class="fas fa-arrow-right text-primary me-2"></i>
+                                Select <strong>Lipa Na M-Pesa</strong>
+                            </div>
+                            
+                            <div class="instruction-step animate__animated animate__fadeIn animate__delay-3s">
+                                <i class="fas fa-arrow-right text-primary me-2"></i>
+                                Choose <strong>Buy Goods and Services</strong>
+                            </div>
+                            
+                            <div class="instruction-step animate__animated animate__fadeIn animate__delay-4s">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-arrow-right text-primary me-2"></i>
+                                        Enter Till Number: <strong>4160709</strong>
+                                    </div>
+                                    <button class="btn btn-sm copy-btn" onclick="copyToClipboard('4160709')">
+                                        <i class="far fa-copy me-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="instruction-step animate__animated animate__fadeIn animate__delay-5s">
+                                <i class="fas fa-arrow-right text-primary me-2"></i>
+                                Enter Amount: <strong>Ksh 350</strong>
+                            </div>
+                            
+                            <div class="instruction-step animate__animated animate__fadeIn animate__delay-6s">
+                                <i class="fas fa-arrow-right text-primary me-2"></i>
+                                Enter your <strong>M-Pesa PIN</strong> and confirm
+                            </div>
+                            
+                            <hr class="my-4">
+                            
+                            <div class="mb-3 animate-in">
+                                <label class="form-label"><i class="fas fa-receipt me-2"></i> Enter M-Pesa Transaction Code:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-lg" id="transactionCode" placeholder="e.g. RLF45H8J9K">
+                                    <button class="btn btn-activate text-white" id="confirmBtn">
+                                        <i class="fas fa-check-circle me-2"></i> Verify Payment
+                                    </button>
+                                </div>
+                                <small class="text-muted mt-1 d-block"><i class="fas fa-info-circle me-1"></i> Check your M-Pesa SMS for the transaction code</small>
+                            </div>
+                            
+                            <div class="alert alert-danger d-none align-items-center mt-3" id="errorMessage">
+                                <i class="fas fa-times-circle me-2 fa-lg"></i>
+                                <span>Wrong transaction code. Please check and try again.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-coins me-2"></i> QuestionClicks2Mpesa
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-wallet me-2"></i> Your Balance</h5>
+                    </div>
+                    <div class="card-body text-center disabled-feature">
+                        <h3 class="text-muted">Ksh 0.00</h3>
+                        <button class="btn btn-info mt-2 disabled">
+                            <i class="fas fa-money-bill-wave me-2"></i> Withdraw via M-Pesa
+                        </button>
+                        <p class="text-muted small mt-2">
+                            <i class="fas fa-lock me-1"></i> Activate account to withdraw funds
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card survey-card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i> Available Surveys</h5>
+                    </div>
+                    <div class="card-body disabled-feature">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-lock me-2"></i> Complete account activation to access surveys
+                        </div>
+                        <div class="list-group">
+                            <a href="#" class="list-group-item list-group-item-action disabled">
+                                <i class="fas fa-whatsapp me-2 text-success"></i>
+                                <strong>WhatsApp Marketing</strong> - Earn Ksh 10 per view
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action disabled">
+                                <i class="fas fa-star me-2 text-warning"></i>
+                                <strong>Product Review</strong> - Earn Ksh 15 per review
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action disabled">
+                                <i class="fas fa-share-alt me-2 text-primary"></i>
+                                <strong>Social Share</strong> - Earn Ksh 20 per share
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Activate Button -->
+    <div class="activate-bottom-btn">
+        <button class="btn btn-activate btn-lg text-white shadow-lg" id="floatingActivateBtn">
+            <i class="fas fa-bolt me-2"></i> ACTIVATE ACCOUNT
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle payment instructions
+        function togglePaymentInstructions() {
+            const instructions = document.getElementById('paymentInstructions');
+            instructions.style.display = instructions.style.display === 'block' ? 'none' : 'block';
+            
+            // Scroll to instructions if showing
+            if (instructions.style.display === 'block') {
+                instructions.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        // Set up click handlers
+        document.getElementById('inactiveAlert').addEventListener('click', togglePaymentInstructions);
+        document.getElementById('floatingActivateBtn').addEventListener('click', togglePaymentInstructions);
+        
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            const copyBtn = event.target.closest('.copy-btn');
+            const originalHtml = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check me-1"></i> Copied!';
+            copyBtn.classList.add('btn-success', 'text-white');
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHtml;
+                copyBtn.classList.remove('btn-success', 'text-white');
+            }, 2000);
+        }
+        
+        // Confirm payment button - always shows error for demo
+        document.getElementById('confirmBtn').addEventListener('click', function() {
+            const transactionCode = document.getElementById('transactionCode').value;
+            const errorMsg = document.getElementById('errorMessage');
+            
+            if (transactionCode.trim() === '') {
+                errorMsg.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> Please enter a transaction code';
+                errorMsg.classList.remove('d-none');
+                return;
+            }
+            
+            // Show error message and shake effect
+            errorMsg.innerHTML = '<i class="fas fa-times-circle me-2"></i> Wrong transaction code. Please check and try again.';
+            errorMsg.classList.remove('d-none');
+            errorMsg.classList.add('animate__animated', 'animate__shakeX');
+            
+            // Remove animation after it completes
+            setTimeout(() => {
+                errorMsg.classList.remove('animate__animated', 'animate__shakeX');
+            }, 1000);
+            
+            // Clear input
+            document.getElementById('transactionCode').value = '';
+        });
+    </script>
+</body>
+</html>
